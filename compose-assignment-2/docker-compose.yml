@@ -1,5 +1,4 @@
 # create your drupal and postgres config here, based off the last assignment
-s it correct :
 version: '2'
 services:
   drupal:
