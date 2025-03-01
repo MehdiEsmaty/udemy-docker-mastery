@@ -1,26 +1,37 @@
-# create your drupal and postgres config here, based off the last assignment
-version: '2'
+version: '3.8'
+
 services:
+  postgres:
+    image: postgres:latest
+    container_name: drupal_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: drupal
+      POSTGRES_USER: drupal
+      POSTGRES_PASSWORD: drupalpass
+    volumes:
+      - drupal-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   drupal:
-    image: custom-drupal
     build: .
+    image: custom-drupal
+    container_name: drupal_app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DRUPAL_DB_DRIVER: pgsql
+      DRUPAL_DB_HOST: postgres
+      DRUPAL_DB_NAME: drupal
+      DRUPAL_DB_USER: drupal
+      DRUPAL_DB_PASSWORD: drupalpass
     ports:
       - "8080:80"
     volumes:
-      - drupal-modules:/var/www/html/modules
-      - drupal-profiles:/var/www/html/profiles
-      - drupal-sites:/var/www/html/sites
-      - drupal-themes:/var/www/html/themes
-  postgres:
-    image: postgres:14
-    environment:
-      - POSTGRES_PASSWORD=mypasswd
-    volumes: 
-     - drupal-data:/var/lib/postgresql/data
+      - drupal-data:/var/www/html
 
 volumes:
+  drupal-db:
   drupal-data:
-  drupal-modules:
-  drupal-profiles:
-  drupal-sites:
-  drupal-themes:
